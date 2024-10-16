@@ -4,15 +4,15 @@ const promotionsController = require('../controllers/promotionsController');
 const { authenticateToken, authorizeAdmin } = require('../middleware/authMiddleware');
 
 // GET all promotions - accessible by all users
-router.get('/', authenticateToken, promotionsController.getPromotions);
+router.get('/',  promotionsController.getPromotions);
 
 // POST a new promotion - only accessible by admin
-router.post('/', authenticateToken, authorizeAdmin, promotionsController.createPromotion);
+router.post('/',  promotionsController.createPromotion);
 
 // PUT (update) a promotion - only accessible by admin
-router.put('/', authenticateToken, authorizeAdmin, promotionsController.updatePromotion);
+router.put('/',  promotionsController.updatePromotion);
 
 // DELETE a promotion - only accessible by admin
-router.delete('/:id', authenticateToken, authorizeAdmin, promotionsController.deletePromotion);
+router.delete('/:id',  promotionsController.deletePromotion);
 
 module.exports = router;

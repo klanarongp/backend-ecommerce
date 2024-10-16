@@ -13,10 +13,9 @@ exports.getPromotions = (req, res) => {
 
 // POST a new promotion
 exports.createPromotion = (req, res) => {
-    const { id, description, status, start_duedate, end_duedate } = req.body;
-
-    const query = 'INSERT INTO promotion (id, description, status, start_duedate, end_duedate) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [id, description, status, start_duedate, end_duedate], (err, results) => {
+    const { id, description, status, discount, start_duedate, end_duedate } = req.body;
+    const query = 'INSERT INTO promotion (id, description, status,discount, start_duedate, end_duedate) VALUES (?, ?, ?, ?, ?, ?)';
+    connection.query(query, [id, description, status,discount, start_duedate, end_duedate], (err, results) => {
         if (err) {
             console.error('Error creating promotion:', err);
             return res.status(500).json({ message: 'Error creating promotion' });
@@ -27,10 +26,10 @@ exports.createPromotion = (req, res) => {
 
 // PUT (update) a promotion
 exports.updatePromotion = (req, res) => {
-    const { id, description, status, start_duedate, end_duedate } = req.body;
+    const { id, description, status,discount, start_duedate, end_duedate } = req.body;
 
-    const query = 'UPDATE promotion SET description = ?, status = ?, start_duedate = ?, end_duedate = ? WHERE id = ?';
-    connection.query(query, [description, status, start_duedate, end_duedate, id], (err, results) => {
+    const query = 'UPDATE promotion SET description = ?, status = ?,discount  = ?, start_duedate = ?, end_duedate = ? WHERE id = ?';
+    connection.query(query, [description, status,discount, start_duedate, end_duedate, id], (err, results) => {
         if (err) {
             console.error('Error updating promotion:', err);
             return res.status(500).json({ message: 'Error updating promotion' });

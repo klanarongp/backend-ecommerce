@@ -33,7 +33,7 @@ exports.findUserByEmail = (email) => {
 // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ทั้งหมด
 exports.getAllUsers = () => {
     const query = 'SELECT * FROM users';
-    
+
     return new Promise((resolve, reject) => {
         connection.query(query, (err, results) => {
             if (err) {
@@ -44,14 +44,69 @@ exports.getAllUsers = () => {
     });
 };
 
-// ฟังก์ชันสำหรับอัปเดตข้อมูลผู้ใช้
-exports.updateUser = (email, password, role) => {
-    const query = 'UPDATE users SET password = ?, role = ? WHERE email = ?';
-    
+// ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้พร้อมที่อยู่
+exports.getAllUsersWithAddress = () => {
+    const query = `
+        SELECT users.email, users.role, 
+               address.street_address, address.city, address.state, 
+               address.postal_code, address.country, address.phone
+        FROM users
+        LEFT JOIN address ON users.email = address.email
+    `;
+
     return new Promise((resolve, reject) => {
-        connection.query(query, [password, role, email], (err, results) => {
+        connection.query(query, (err, results) => {
             if (err) {
                 return reject(err);
+            }
+            resolve(results);
+        });
+    });
+};
+
+// อัปเดตข้อมูลผู้ใช้
+exports.updateUser = async (email, newPassword, role) => {
+    let query = 'UPDATE users SET role = ?';
+    const params = [role];
+
+    if (newPassword) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        query += ', password = ?';
+        params.push(hashedPassword);
+    }
+
+    query += ' WHERE email = ?';
+    params.push(email);
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, params, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+};
+
+// อัปเดตข้อมูลที่อยู่
+exports.updateAddress = (email, street_address, city, state, postal_code, country, phone) => {
+    const query = `UPDATE address SET 
+            street_address = ?, 
+            city = ?, 
+            state = ?, 
+            postal_code = ?, 
+            country = ?, 
+            phone = ? 
+        WHERE email = ?`;
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, [street_address, city, state, postal_code, country, phone, email], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            // หากไม่พบแอดเดรสให้คืนค่า 0
+            if (results.affectedRows === 0) {
+                return reject(new Error('Address not found.'));
             }
             resolve(results);
         });
@@ -61,9 +116,23 @@ exports.updateUser = (email, password, role) => {
 // ฟังก์ชันสำหรับลบผู้ใช้
 exports.deleteUser = (email) => {
     const query = 'DELETE FROM users WHERE email = ?';
-    
+
     return new Promise((resolve, reject) => {
         connection.query(query, [email], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+};
+
+
+exports.updateUserPassword = (email, password) => {
+    const query = 'UPDATE users SET password = ? WHERE email = ?';
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, [password, email], (err, results) => {
             if (err) {
                 return reject(err);
             }

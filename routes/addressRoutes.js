@@ -3,6 +3,8 @@ const router = express.Router();
 const addressController = require('../controllers/addressController');
 const authenticate = require('../middleware/authenticate'); // middleware for authentication
 
+
+router.put('/:email', addressController.updateAddress);
 // GET all addresses
 router.get('/', authenticate, addressController.getAllAddresses);
 
@@ -10,6 +12,8 @@ router.get('/', authenticate, addressController.getAllAddresses);
 router.post('/', authenticate, addressController.createAddress);
 
 // DELETE an address by email
-router.delete('/:email', authenticate, addressController.deleteAddress);
+router.delete('/:email',  addressController.deleteAddress);
+
+
 
 module.exports = router;

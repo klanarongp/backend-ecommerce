@@ -4,7 +4,7 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const promotionsRoutes = require('./routes/promotionsRoutes');
-const promotionMappingRoutes = require('./routes/promotionMappingRoutes');
+// const promotionMappingRoutes = require('./routes/promotionMappingRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const billingListRoutes = require('./routes/billingListRoutes');
 const addressRoutes = require('./routes/addressRoutes');
@@ -24,7 +24,7 @@ app.use(bodyParser.json()); // Use body-parser to parse JSON
 app.use('/api/users', userRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/promotions', promotionsRoutes);
-app.use('/api/promotionMapping', promotionMappingRoutes);
+// app.use('/api/promotionMapping', promotionMappingRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/billingList', billingListRoutes);
 app.use('/api/address', addressRoutes);

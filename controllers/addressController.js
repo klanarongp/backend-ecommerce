@@ -11,16 +11,16 @@ exports.getAllAddresses = (req, res) => {
     });
 };
 
+// Create a new address
 exports.createAddress = [
     // Validate request body
     body('email')
         .custom((value) => {
-            // Regex สำหรับตรวจสอบอีเมล
             const validEmailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/;
             if (!validEmailPattern.test(value)) {
                 throw new Error('Email is required and must be valid');
             }
-            return true; // ถ้าอีเมลถูกต้อง
+            return true;
         }),
     body('street_address').notEmpty().withMessage('Street address is required'),
     body('city').notEmpty().withMessage('City is required'),
@@ -61,3 +61,32 @@ exports.deleteAddress = (req, res) => {
         res.status(200).json({ message: 'ที่อยู่ถูกลบเรียบร้อยแล้ว!' });
     });
 };
+
+// Update an address by email
+exports.updateAddress = async (req, res) => {
+    const { email } = req.params;
+    const { street_address, city, state, postal_code, country, phone } = req.body;
+
+    try {
+        const query = `
+            UPDATE address
+            SET street_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone = ?
+            WHERE email = ?
+        `;
+        // ตรวจสอบว่าผลลัพธ์ที่ได้จากการ execute คืออะไร
+        const result = await connection.promise().query(query, [street_address, city, state, postal_code, country, phone, email]);
+
+        // ตรวจสอบผลลัพธ์ใน console
+        console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
+
+        if (result[0].affectedRows > 0) {
+            return res.status(200).json({ message: 'Address updated successfully!' });
+        } else {
+            return res.status(404).json({ message: 'Address not found for the given email.' });
+        }
+    } catch (error) {
+        console.error('Error updating address:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
