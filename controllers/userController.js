@@ -4,16 +4,18 @@ const jwt = require('jsonwebtoken'); // สำหรับสร้าง JWT
 
 // ฟังก์ชันสำหรับการลงทะเบียนผู้ใช้
 exports.register = async (req, res) => {
-    const { email, password, role } = req.body;
-    console.log(req, res,req.body)
+    const { email, password } = req.body; // เอา role ออก
+    const role = 'user'; // ตั้งค่า role เป็น 'user'
+    console.log(req.body); // แสดงค่าที่รับมาใน console
+
     try {
         const userId = await userModel.registerUser(email, password, role);
         res.status(201).json({ id: userId, email, role });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-    console.log(req.body); // แสดงค่าที่รับมาใน console
 };
+
 
 // ฟังก์ชันสำหรับการเข้าสู่ระบบ
 exports.login = async (req, res) => {
@@ -56,6 +58,7 @@ exports.getAllUsers = async (req, res) => {
 
 // ฟังก์ชันสำหรับอัปเดตข้อมูลผู้ใช้
 exports.updateUser = async (req, res) => {
+    console.log('test')
     const { email, street_address, city, state, postal_code, country, phone } = req.body;
 
     // log ข้อมูลที่ได้รับจาก request
@@ -81,7 +84,7 @@ exports.deleteUser = async (req, res) => {
     const { email } = req.params;
 
     try {
-        await userModel.deleteUser(email);
+        await userModel.deleteUserWithAddress(email);
         res.status(200).json({ message: 'User deleted successfully!' });
     } catch (error) {
         res.status(500).json({ error: error.message });

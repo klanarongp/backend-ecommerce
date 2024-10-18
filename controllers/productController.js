@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 exports.getAllProduct = (req, res) => {
-    connection.query('SELECT * FROM products', (err, results) => {
+    connection.query('SELECT p.*,IFNULL((p.quantity - b.quantity),0) AS remain_quantity FROM products AS p LEFT JOIN billing_detail AS b ON p.id = b.product_id', (err, results) => {
         if (err) {
             console.error('Error fetching products:', err);
             return res.status(500).json({ error: 'Failed to fetch products' });
@@ -13,24 +13,25 @@ exports.getAllProduct = (req, res) => {
         const productsWithImageUrls = results.map(product => {
             return {
                 ...product,
-                img: `http://localhost:3000/${product.img}` // สร้าง URL ของภาพ
+                img: `http://localhost:3000/${product.img}`, // สร้าง URL ของภาพ
+                
             };
         });
-
+        console.log(productsWithImageUrls)
         res.json(productsWithImageUrls);
     });
 };
 
 exports.createProduct = (req, res) => {
     const imgPath = req.file ? req.file.path : null;
-    const { id, description, unit, price, size, type, quantity, discount_price, is_on_promotion } = req.body;
+    const { description, unit, price, size, type, quantity, discount_price, is_on_promotion } = req.body;
 
     // แปลง is_on_promotion เป็น 1 หรือ 0
     const isOnPromotion = is_on_promotion === 'true' ? 1 : 0;
 
     connection.query(
-        'INSERT INTO products (id, description, unit, price, img, size, type, quantity, discount_price, is_on_promotion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-        [id, description, unit, price, imgPath, size, type, quantity, discount_price, isOnPromotion],
+        'INSERT INTO products (description, unit, price, img, size, type, quantity, discount_price, is_on_promotion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+        [description, unit, price, imgPath, size, type, quantity, discount_price, isOnPromotion],
         (err) => {
             if (err) {
                 console.error('Error creating product:', err);

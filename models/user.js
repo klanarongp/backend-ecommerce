@@ -7,10 +7,18 @@ exports.registerUser = async (email, password, role) => {
     const query = 'INSERT INTO users (email, password, role) VALUES (?, ?, ?)';
     
     return new Promise((resolve, reject) => {
-        connection.query(query, [email, hashedPassword, role], (err, results) => {
+        connection.query(query, [email, hashedPassword, role], async (err, results) => {
             if (err) {
                 return reject(err);
             }
+
+            // เพิ่มที่อยู่ลงในตาราง address โดยใช้เพียงแค่ email
+            try {
+                await addAddress(email); // เรียกใช้ฟังก์ชันเพิ่มที่อยู่
+            } catch (error) {
+                return reject(error);
+            }
+
             resolve(results.insertId);
         });
     });
@@ -60,6 +68,22 @@ exports.getAllUsersWithAddress = () => {
                 return reject(err);
             }
             resolve(results);
+        });
+    });
+};
+
+const addAddress = (email) => {
+    const query = 'INSERT INTO address (email, street_address, city, state, postal_code, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?)'; // เพิ่มข้อมูลที่อยู่
+
+    // กำหนดค่าเริ่มต้นเป็น '-'
+    const defaultAddress = '-', defaultCity = '-', defaultState = '-', defaultPostalCode = '-', defaultCountry = '-', defaultPhone = '-';
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, [email, defaultAddress, defaultCity, defaultState, defaultPostalCode, defaultCountry, defaultPhone], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results.insertId);
         });
     });
 };
@@ -139,4 +163,30 @@ exports.updateUserPassword = (email, password) => {
             resolve(results);
         });
     });
+};
+
+// ฟังก์ชันสำหรับลบที่อยู่
+exports.deleteAddress = (email) => {
+    const query = 'DELETE FROM address WHERE email = ?';
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, [email], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+};
+
+// ฟังก์ชันสำหรับลบผู้ใช้และที่อยู่
+exports.deleteUserWithAddress = async (email) => {
+    try {
+        // ลบที่อยู่ก่อน
+        await this.deleteAddress(email);
+        // ลบผู้ใช้
+        await this.deleteUser(email);
+    } catch (error) {
+        throw error; // ส่งต่อข้อผิดพลาด
+    }
 };

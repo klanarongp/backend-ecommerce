@@ -64,9 +64,9 @@ exports.deleteAddress = (req, res) => {
 
 // Update an address by email
 exports.updateAddress = async (req, res) => {
-    const { email } = req.params;
+    const email = req.user.email;
     const { street_address, city, state, postal_code, country, phone } = req.body;
-
+    console.log(email);
     try {
         const query = `
             UPDATE address
@@ -77,8 +77,8 @@ exports.updateAddress = async (req, res) => {
         const result = await connection.promise().query(query, [street_address, city, state, postal_code, country, phone, email]);
 
         // ตรวจสอบผลลัพธ์ใน console
-        console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
-
+        //console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
+        
         if (result[0].affectedRows > 0) {
             return res.status(200).json({ message: 'Address updated successfully!' });
         } else {
@@ -90,3 +90,28 @@ exports.updateAddress = async (req, res) => {
     }
 };
 
+exports.updateAddressUser = async (req, res) => {
+    const { email } = req.params;
+    const { street_address, city, state, postal_code, country, phone } = req.body;
+    try {
+        const query = `
+            UPDATE address
+            SET email = ?, street_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone = ?
+            WHERE email = ?
+        `;
+        // ตรวจสอบว่าผลลัพธ์ที่ได้จากการ execute คืออะไร
+        const result = await connection.promise().query(query, [email,street_address, city, state, postal_code, country, phone, email]);
+
+        // ตรวจสอบผลลัพธ์ใน console
+        //console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
+        
+        if (result[0].affectedRows > 0) {
+            return res.status(200).json({ message: 'Address updated successfully!' });
+        } else {
+            return res.status(404).json({ message: 'Address not found for the given email.' });
+        }
+    } catch (error) {
+        console.error('Error updating address:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
