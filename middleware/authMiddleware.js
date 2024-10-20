@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware สำหรับตรวจสอบ token
 exports.authenticateToken = (req, res, next) => {
     const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
     if (!token) return res.sendStatus(401);
@@ -13,7 +12,6 @@ exports.authenticateToken = (req, res, next) => {
     });
 };
 
-// Middleware สำหรับตรวจสอบสิทธิ์ admin
 exports.authorizeAdmin = (req, res, next) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ message: 'Access denied: Admins only' });

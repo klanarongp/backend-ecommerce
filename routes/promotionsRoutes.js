@@ -3,16 +3,16 @@ const router = express.Router();
 const promotionsController = require('../controllers/promotionsController');
 const { authenticateToken, authorizeAdmin } = require('../middleware/authMiddleware');
 
-// GET all promotions - accessible by all users
+// GET all 
 router.get('/',  promotionsController.getPromotions);
 
-// POST a new promotion - only accessible by admin
+// POST 
 router.post('/',  promotionsController.createPromotion);
 
-// PUT (update) a promotion - only accessible by admin
+// PUT 
 router.put('/',  promotionsController.updatePromotion);
 
-// DELETE a promotion - only accessible by admin
+// DELETE 
 router.delete('/:id',  promotionsController.deletePromotion);
 
 module.exports = router;

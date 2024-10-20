@@ -9,11 +9,10 @@ exports.getAllProduct = (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch products' });
         }
 
-        // แปลงข้อมูล img เป็น URL ที่สามารถเข้าถึงได้
         const productsWithImageUrls = results.map(product => {
             return {
                 ...product,
-                img: `http://localhost:3000/${product.img}`, // สร้าง URL ของภาพ
+                img: `http://localhost:3000/${product.img}`, 
                 
             };
         });
@@ -26,7 +25,6 @@ exports.createProduct = (req, res) => {
     const imgPath = req.file ? req.file.path : null;
     const { description, unit, price, size, type, quantity, discount_price, is_on_promotion } = req.body;
 
-    // แปลง is_on_promotion เป็น 1 หรือ 0
     const isOnPromotion = is_on_promotion === 'true' ? 1 : 0;
 
     connection.query(
@@ -47,7 +45,6 @@ exports.updateProduct = (req, res) => {
     const { description, unit, price, size, type, quantity, discount_price, is_on_promotion } = req.body; 
     const imgPath = req.file ? req.file.path : null;
 
-    // แปลง is_on_promotion เป็น 1 หรือ 0
     const isOnPromotion = is_on_promotion === 'true' ? 1 : 0;
 
     const query = 
@@ -104,8 +101,7 @@ exports.deleteProduct = (req, res) => {
 };
 
 exports.getProductById = (req, res) => {
-    const { id } = req.params; // ดึง ID จาก params
-
+    const { id } = req.params; 
     connection.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
         if (err) {
             console.error('Error fetching product:', err);
@@ -115,10 +111,9 @@ exports.getProductById = (req, res) => {
             return res.status(404).json({ error: 'Product not found' });
         }
 
-        // แปลงข้อมูล img เป็น URL ที่สามารถเข้าถึงได้
         const productWithImageUrl = {
             ...results[0],
-            img: `http://localhost:3000/${results[0].img}` // สร้าง URL ของภาพ
+            img: `http://localhost:3000/${results[0].img}` 
         };
 
         res.json(productWithImageUrl);
@@ -142,19 +137,17 @@ exports.getOnSaleProduct = (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch on-sale products' });
         }
 
-        // ตรวจสอบว่ามีสินค้าหรือไม่
         if (results.length === 0) {
             return res.status(404).json({ error: 'No on-sale products found' });
         }
 
-        // แปลงข้อมูล img เป็น URL ที่สามารถเข้าถึงได้
         const onSaleProductWithImageUrls = results.map(product => ({
             ...product,
-            img: `http://localhost:3000/${product.img}` // สร้าง URL ของภาพ
+            img: `http://localhost:3000/${product.img}` 
         }));
 
         res.json({
-            count: onSaleProductWithImageUrls.length, // จำนวนสินค้าที่ลดราคา
+            count: onSaleProductWithImageUrls.length, 
             products: onSaleProductWithImageUrls
         });
     });

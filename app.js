@@ -11,14 +11,13 @@ const addressRoutes = require('./routes/addressRoutes');
 
 const app = express();
 
-// Middleware
 app.use(cors({
-    origin: 'http://localhost:4000', // Allow access from frontend address
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-    credentials: true, // If cookies need to be sent
+    origin: 'http://localhost:4000', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    credentials: true, 
 }));
 
-app.use(bodyParser.json()); // Use body-parser to parse JSON
+app.use(bodyParser.json()); 
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -29,7 +28,6 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/billingList', billingListRoutes);
 app.use('/api/address', addressRoutes);
 
-// Set static middleware to access files in uploads
 app.use('/uploads', express.static('uploads'));
 
 // Start the server

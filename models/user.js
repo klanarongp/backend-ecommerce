@@ -1,5 +1,5 @@
-const connection = require('../db'); // นำเข้า connection จาก db.js
-const bcrypt = require('bcrypt'); // สำหรับเข้ารหัสรหัสผ่าน
+const connection = require('../db'); 
+const bcrypt = require('bcrypt'); 
 
 // ฟังก์ชันสำหรับการลงทะเบียนผู้ใช้
 exports.registerUser = async (email, password, role) => {
@@ -12,9 +12,8 @@ exports.registerUser = async (email, password, role) => {
                 return reject(err);
             }
 
-            // เพิ่มที่อยู่ลงในตาราง address โดยใช้เพียงแค่ email
             try {
-                await addAddress(email); // เรียกใช้ฟังก์ชันเพิ่มที่อยู่
+                await addAddress(email); 
             } catch (error) {
                 return reject(error);
             }
@@ -73,9 +72,8 @@ exports.getAllUsersWithAddress = () => {
 };
 
 const addAddress = (email) => {
-    const query = 'INSERT INTO address (email, street_address, city, state, postal_code, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?)'; // เพิ่มข้อมูลที่อยู่
+    const query = 'INSERT INTO address (email, street_address, city, state, postal_code, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
 
-    // กำหนดค่าเริ่มต้นเป็น '-'
     const defaultAddress = '-', defaultCity = '-', defaultState = '-', defaultPostalCode = '-', defaultCountry = '-', defaultPhone = '-';
 
     return new Promise((resolve, reject) => {
@@ -128,7 +126,7 @@ exports.updateAddress = (email, street_address, city, state, postal_code, countr
             if (err) {
                 return reject(err);
             }
-            // หากไม่พบแอดเดรสให้คืนค่า 0
+
             if (results.affectedRows === 0) {
                 return reject(new Error('Address not found.'));
             }
@@ -182,11 +180,9 @@ exports.deleteAddress = (email) => {
 // ฟังก์ชันสำหรับลบผู้ใช้และที่อยู่
 exports.deleteUserWithAddress = async (email) => {
     try {
-        // ลบที่อยู่ก่อน
         await this.deleteAddress(email);
-        // ลบผู้ใช้
         await this.deleteUser(email);
     } catch (error) {
-        throw error; // ส่งต่อข้อผิดพลาด
+        throw error; 
     }
 };

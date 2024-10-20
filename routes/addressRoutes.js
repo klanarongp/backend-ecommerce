@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const addressController = require('../controllers/addressController');
-const authenticate = require('../middleware/authenticate'); // middleware for authentication
+const authenticate = require('../middleware/authenticate'); 
 
 
 router.put('/:email', addressController.updateAddressUser);

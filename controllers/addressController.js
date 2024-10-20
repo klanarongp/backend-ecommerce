@@ -13,7 +13,6 @@ exports.getAllAddresses = (req, res) => {
 
 // Create a new address
 exports.createAddress = [
-    // Validate request body
     body('email')
         .custom((value) => {
             const validEmailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/;
@@ -29,7 +28,6 @@ exports.createAddress = [
     body('country').notEmpty().withMessage('Country is required'),
     body('phone').notEmpty().withMessage('Phone number is required'),
 
-    // Handle the request
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -73,11 +71,7 @@ exports.updateAddress = async (req, res) => {
             SET street_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone = ?
             WHERE email = ?
         `;
-        // ตรวจสอบว่าผลลัพธ์ที่ได้จากการ execute คืออะไร
         const result = await connection.promise().query(query, [street_address, city, state, postal_code, country, phone, email]);
-
-        // ตรวจสอบผลลัพธ์ใน console
-        //console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
         
         if (result[0].affectedRows > 0) {
             return res.status(200).json({ message: 'Address updated successfully!' });
@@ -99,11 +93,8 @@ exports.updateAddressUser = async (req, res) => {
             SET email = ?, street_address = ?, city = ?, state = ?, postal_code = ?, country = ?, phone = ?
             WHERE email = ?
         `;
-        // ตรวจสอบว่าผลลัพธ์ที่ได้จากการ execute คืออะไร
-        const result = await connection.promise().query(query, [email,street_address, city, state, postal_code, country, phone, email]);
 
-        // ตรวจสอบผลลัพธ์ใน console
-        //console.log(result); // เพิ่มการพิมพ์ผลลัพธ์เพื่อตรวจสอบ
+        const result = await connection.promise().query(query, [email,street_address, city, state, postal_code, country, phone, email]);
         
         if (result[0].affectedRows > 0) {
             return res.status(200).json({ message: 'Address updated successfully!' });

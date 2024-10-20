@@ -1,12 +1,11 @@
-const userModel = require('../models/user'); // นำเข้าโมเดลผู้ใช้
-const bcrypt = require('bcrypt'); // สำหรับเข้ารหัสรหัสผ่าน
-const jwt = require('jsonwebtoken'); // สำหรับสร้าง JWT
+const userModel = require('../models/user'); 
+const bcrypt = require('bcrypt'); 
+const jwt = require('jsonwebtoken'); 
 
-// ฟังก์ชันสำหรับการลงทะเบียนผู้ใช้
 exports.register = async (req, res) => {
-    const { email, password } = req.body; // เอา role ออก
-    const role = 'user'; // ตั้งค่า role เป็น 'user'
-    console.log(req.body); // แสดงค่าที่รับมาใน console
+    const { email, password } = req.body; 
+    const role = 'user'; 
+    console.log(req.body); 
 
     try {
         const userId = await userModel.registerUser(email, password, role);
@@ -34,11 +33,9 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // สร้าง JWT
         const token = jwt.sign({ email: user.email, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
 
-        // ส่งกลับ token และ role
-        res.status(200).json({ token, role: user.role }); // เพิ่มการส่ง role กลับ
+        res.status(200).json({ token, role: user.role }); 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -48,7 +45,6 @@ exports.login = async (req, res) => {
 // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ทั้งหมด
 exports.getAllUsers = async (req, res) => {
     try {
-        // เปลี่ยนไปใช้ getAllUsersWithAddress
         const users = await userModel.getAllUsersWithAddress(); 
         res.status(200).json(users);
     } catch (error) {
@@ -61,7 +57,6 @@ exports.updateUser = async (req, res) => {
     console.log('test')
     const { email, street_address, city, state, postal_code, country, phone } = req.body;
 
-    // log ข้อมูลที่ได้รับจาก request
     console.log('Received request with body:', req.body);
 
     try {
@@ -95,7 +90,7 @@ exports.resetPassword = async (req, res) => {
     console.log(req.body)
     const { email, password } = req.body;
     try {
-        // ตรวจสอบว่าผู้ใช้งานมีอยู่จริงก่อน
+
         const user = await userModel.findUserByEmail(email);
         if (user.length === 0) {
             return res.status(404).json({ message: 'User not found!' });

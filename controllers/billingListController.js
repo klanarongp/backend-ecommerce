@@ -1,6 +1,6 @@
 const connection = require('../db');
 
-// GET ข้อมูล billing list ทั้งหมด
+// GET ข้อมูล billing list
 exports.getAllBillingLists = (req, res) => {
     connection.query('SELECT * FROM billing_list', (err, results) => {
         if (err) {
@@ -10,11 +10,10 @@ exports.getAllBillingLists = (req, res) => {
     });
 };
 
-// POST สร้าง billing list ใหม่
+// POST สร้าง billing list 
 exports.createBillingList = (req, res) => {
     const { product_id, order_id, unit, price, total_price, quantity } = req.body;
-    
-    // Validate required fields
+
     if (!product_id || !order_id || !unit || !price || !total_price || !quantity) {
         return res.status(400).json({ message: 'กรุณาระบุข้อมูลให้ครบถ้วน' });
     }
@@ -29,7 +28,7 @@ exports.createBillingList = (req, res) => {
     });
 };
 
-// DELETE ลบรายการ billing list
+// DELETE ลบรายการ billing 
 exports.deleteBillingList = (req, res) => {
     const { order_id, product_id } = req.params;
     const sql = 'DELETE FROM billing_list WHERE order_id = ? AND product_id = ?';
