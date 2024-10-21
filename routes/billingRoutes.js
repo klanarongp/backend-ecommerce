@@ -23,6 +23,10 @@ router.get('/',  billingController.getAllBillingRecords);
 // POST 
 router.post('/',  upload.single('img_bill'), authenticateToken,billingController.createBillingRecord);
 
+// PUT (เพิ่ม endpoint นี้)
+router.put('/:order_id', billingController.updateBillingStatus);
+
+
 // DELETE 
 router.delete('/:order_id', billingController.deleteBillingRecord);
 

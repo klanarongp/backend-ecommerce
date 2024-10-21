@@ -2,7 +2,7 @@ const connection = require('../db');
 
 // GET ข้อมูล billing list
 exports.getAllBillingLists = (req, res) => {
-    connection.query('SELECT * FROM billing_list', (err, results) => {
+    connection.query('SELECT * FROM billing_detail', (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงข้อมูล billing list', error: err });
         }
@@ -14,14 +14,18 @@ exports.getAllBillingLists = (req, res) => {
 exports.createBillingList = (req, res) => {
     const { product_id, order_id, unit, price, total_price, quantity } = req.body;
 
+    // Log request body for debugging
+    console.log(req.body);
+
     if (!product_id || !order_id || !unit || !price || !total_price || !quantity) {
         return res.status(400).json({ message: 'กรุณาระบุข้อมูลให้ครบถ้วน' });
     }
 
-    const sql = 'INSERT INTO billing_list (product_id, order_id, unit, price, total_price, quantity) VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO billing_detail (product_id, order_id, unit, price, total_price, quantity) VALUES (?, ?, ?, ?, ?, ?)';
     
     connection.query(sql, [product_id, order_id, unit, price, total_price, quantity], (err, result) => {
         if (err) {
+            console.error('Error inserting into billing_detail:', err); // Log the error
             return res.status(500).json({ message: 'เกิดข้อผิดพลาดในการสร้าง billing list', error: err });
         }
         res.status(201).json({ message: 'สร้าง billing list สำเร็จ!', id: result.insertId });
@@ -31,10 +35,11 @@ exports.createBillingList = (req, res) => {
 // DELETE ลบรายการ billing 
 exports.deleteBillingList = (req, res) => {
     const { order_id, product_id } = req.params;
-    const sql = 'DELETE FROM billing_list WHERE order_id = ? AND product_id = ?';
+    const sql = 'DELETE FROM billing_detail WHERE order_id = ? AND product_id = ?';
 
     connection.query(sql, [order_id, product_id], (err, result) => {
         if (err) {
+            console.error('Error deleting billing_detail:', err); // Log the error
             return res.status(500).json({ message: 'เกิดข้อผิดพลาดในการลบ billing list', error: err });
         }
         if (result.affectedRows === 0) {
