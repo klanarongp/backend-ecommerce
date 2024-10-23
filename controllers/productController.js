@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 exports.getAllProduct = (req, res) => {
-    connection.query('SELECT p.*,IFNULL((p.quantity - b.quantity),0) AS remain_quantity FROM products AS p LEFT JOIN billing_detail AS b ON p.id = b.product_id', (err, results) => {
+    //const query = `SELECT p.*,IFNULL((p.quantity - b.quantity),0) AS remain_quantity FROM products AS p LEFT JOIN billing_detail AS b ON p.id = b.product_id`;
+    const query = `SELECT * FROM products ORDER BY id DESC`;
+    connection.query(query, (err, results) => {
         if (err) {
             console.error('Error fetching products:', err);
             return res.status(500).json({ error: 'Failed to fetch products' });

@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // GET 
-router.get('/',  billingController.getAllBillingRecords);
+router.get('/',  billingController.getAllBillingRecordsAdmin);
+
+router.get('/bill_user', authenticateToken, billingController.getAllBillingRecordsUser);
 
 // POST 
 router.post('/',  upload.single('img_bill'), authenticateToken,billingController.createBillingRecord);

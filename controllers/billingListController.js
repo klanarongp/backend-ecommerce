@@ -1,8 +1,14 @@
 const connection = require('../db');
 
-// GET ข้อมูล billing list
+// GET ข้อมูล billing list พร้อม status
 exports.getAllBillingLists = (req, res) => {
-    connection.query('SELECT * FROM billing_detail', (err, results) => {
+    const sql = `
+        SELECT bd.*, b.status
+        FROM billing_detail AS bd
+        LEFT JOIN billing AS b ON bd.order_id = b.order_id
+    `;
+
+    connection.query(sql, (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงข้อมูล billing list', error: err });
         }

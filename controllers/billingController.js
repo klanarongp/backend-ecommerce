@@ -132,7 +132,7 @@ const validateBillingData = (data) => {
 exports.uploadBillingImage = upload.single('billingImage'); 
 
 // Get all billing records
-exports.getAllBillingRecords = (req, res) => {
+exports.getAllBillingRecordsAdmin = (req, res) => {
     connection.query('SELECT b.*, bd.product_id, bd.unit, bd.quantity, b.order_id AS bOrderId, bd.order_id AS bdOrderId, bd.price AS bdPrice, bd.total_price AS bdTotalPrice FROM billing AS b LEFT JOIN billing_detail AS bd ON b.order_id = bd.order_id', (err, results) => {
         if (err) return handleError(res, err);
         
@@ -174,6 +174,71 @@ exports.getAllBillingRecords = (req, res) => {
         res.status(200).json({ message: 'Billing records retrieved successfully', dataBilling: result });
     });
 };
+
+exports.getAllBillingRecordsUser = (req, res) => {
+    const { email } = req.user;
+    const query = `SELECT 
+        b.*, 
+        bd.product_id, 
+        bd.unit, 
+        bd.quantity, 
+        b.order_id AS bOrderId, 
+        bd.order_id AS bdOrderId, 
+        bd.price AS bdPrice, 
+        bd.total_price AS bdTotalPrice,
+        p.img AS product_img, 
+        p.description AS product_description
+    FROM 
+        billing AS b 
+    LEFT JOIN 
+        billing_detail AS bd ON b.order_id = bd.order_id
+    LEFT JOIN 
+        products AS p ON bd.product_id = p.id
+    `;
+    connection.query(query,[email], (err, results) => {
+        if (err) return handleError(res, err);
+        
+        let result = [];
+        let arrTemp = { orderId: '', count: -1 };
+        results.map((v) => {
+            if (arrTemp.orderId === '' || arrTemp.orderId !== v.bOrderId) {
+                result.push({
+                    order_id: v.bOrderId,
+                    email: v.email,
+                    promotion_id: v.promotion_id,
+                    amount: v.amount,
+                    price: v.price,
+                    total_price: v.total_price,
+                    status: v.status,
+                    img_bill: v.img_bill ? `http://localhost:3000/${v.img_bill}` : null,
+                    orderDetail: [{
+                        order_id: v.bdOrderId,
+                        product_id: v.product_id,
+                        unit: v.unit,
+                        price: v.bdPrice,
+                        totalPrice: v.bdTotalPrice,
+                        quantity: v.quantity,
+                        product_img: v.product_img ? `http://localhost:3000/${v.product_img}` : null,
+                        product_description: v.product_description
+                    }]
+                });
+                arrTemp.count++;
+            } else {
+                result[arrTemp.count].orderDetail.push({
+                    order_id: v.bdOrderId,
+                    product_id: v.product_id,
+                    unit: v.unit,
+                    price: v.bdPrice,
+                    totalPrice: v.bdTotalPrice,
+                    quantity: v.quantity,
+                });
+            }
+            arrTemp.orderId = v.bOrderId;
+        });
+        res.status(200).json({ message: 'Billing records retrieved successfully', dataBilling: result });
+    });
+};
+
 
 // Create a new billing record
 exports.createBillingRecord = (req, res) => {
